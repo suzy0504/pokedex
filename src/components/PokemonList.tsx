@@ -1,16 +1,14 @@
 "use client";
 
+import { Pokemon } from "@/app/types/pokemonsTypes";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-type Pokemon = {
-  id: number;
-  name: string;
-  korean_name: string;
-  sprites: { front_default: string };
-};
+// interface PokemonProps {
+//   pokemon: Pokemon;
+// }
 
 function PokemonListPage() {
   const router = useRouter();

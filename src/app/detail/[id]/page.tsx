@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Pokemon } from "@/app/types/pokemonsTypes";
 import PokemonDetail from "@/components/PokemonDetail";
+import { fetchPokemonData } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 const DetailPage = ({
   params,
@@ -11,31 +11,42 @@ const DetailPage = ({
     id: string;
   };
 }) => {
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  // const [error, setError] = useState<string | null>(null);
+  const { id } = params;
+  const {
+    data: pokemon,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["pokemon", id],
+    queryFn: fetchPokemonData,
+  });
 
-  useEffect(() => {
-    if (params.id) {
-      const fetchPokemon = async () => {
-        try {
-          const response = await fetch(`/api/pokemons/${params.id}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data: Pokemon = await response.json();
-          setPokemon(data);
-        } catch (error) {
-          console.error(error);
-          setError("Failed to fetch data");
-          setPokemon(null);
-        }
-      };
-      fetchPokemon();
-    }
-  }, [params.id]);
+  if (isPending) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
 
-  if (error) return <p>{error}</p>;
-  if (!pokemon) return <p>Loading...</p>;
+  // useEffect(() => {
+  //   if (params.id) {
+  //     const fetchPokemon = async () => {
+  //       try {
+  //         const response = await fetch(`/api/pokemons/${params.id}`);
+  //         if (!response.ok) {
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
+  //         const data: Pokemon = await response.json();
+  //         setPokemon(data);
+  //       } catch (error) {
+  //         console.error(error);
+  //         setPokemon(null);
+  //       }
+  //     };
+  //     fetchPokemon();
+  //   }
+  // }, [params.id]);
+
+  // if (error) return <p>{error}</p>;
+  // if (!pokemon) return <p>Loading...</p>;
 
   return <div>{pokemon && <PokemonDetail pokemon={pokemon} />}</div>;
 };
