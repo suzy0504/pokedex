@@ -3,7 +3,7 @@ import React from "react";
 
 const Header = () => {
   return (
-    <div>
+    <div className="flex justify-between w-full">
       <Image src="/logo.png" alt="logo" width={149} height={67} />
     </div>
   );

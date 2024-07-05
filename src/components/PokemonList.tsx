@@ -1,40 +1,29 @@
 "use client";
 
 import { Pokemon } from "@/app/types/pokemonsTypes";
-import axios from "axios";
+import { fetchPokemonData } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-
-// interface PokemonProps {
-//   pokemon: Pokemon;
-// }
 
 function PokemonListPage() {
   const router = useRouter();
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchPokemon = async () => {
-      try {
-        const response = await axios.get("/api/pokemons");
-        setPokemonList(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    };
-
-    fetchPokemon();
-  }, []);
+  const {
+    data: pokemonList,
+    isPending,
+    isError,
+  } = useQuery<Pokemon[]>({
+    queryKey: ["pokemons"],
+    queryFn: fetchPokemonData,
+  });
 
   const handleCardClick = (id: number) => {
     router.push(`/detail/${id}`);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (isPending) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
 
   return (
     <div className="grid grid-cols-6 gap-4 p-2">
